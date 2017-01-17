@@ -57,7 +57,11 @@ bool render() {
   // *********************************
   // Create rotation matrix and scale matrix
   // Set M to be the combination of scale and rotation - make sure you have the correct order
-
+  S = scale(mat4(1.0f), vec3(s, s, s));
+  vec3 z_rot(0.0f, 0.0f, 1.0f);
+  quat qz = rotate(quat(), theta, z_rot);
+  R = mat4_cast(qz);
+  M = R * S;
 
 
   // *********************************

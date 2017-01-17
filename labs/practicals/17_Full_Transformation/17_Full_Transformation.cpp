@@ -62,6 +62,13 @@ bool update(float delta_time) {
   if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT)) {
     pos += vec3(5.0f, 0.0f, 0.0f) * delta_time;
   }
+  // Additional instructions for z-axis movement
+  if (glfwGetKey(renderer::get_window(), GLFW_KEY_A)) {
+	  pos += (0.0f, -5.0f, 0.0f) * delta_time;	
+  }
+  if (glfwGetKey(renderer::get_window(), GLFW_KEY_D)) {
+	  pos += (0.0f, 5.0f, 0.0f) * delta_time;
+  }
   // Update the camera
   cam.update(delta_time);
   return true;
@@ -74,11 +81,21 @@ bool render() {
   // *********************************
   // Create transformation matrices
   // ******************************
+  vec3 s_vec(s, s, s);
+  vec3 x_rot(1.0f, 0.0f, 0.0f);
+  vec3 y_rot(0.0f, 1.0f, 0.0f);
+  vec3 z_rot(0.0f, 0.0f, 1.0f);
+  quat qz = rotate(quat(), theta, z_rot);
 
-
+  //Scale
+  S = scale(mat4(1.0f), s_vec);
+  //Rotate
+  R = mat4_cast(qz);
+  //Translate
+  T = translate(mat4(1.0f), pos);
 
   // Combine matrices to set M - remember multiplication order
-
+  M = T * (R * S);
   // *********************************
   // Create MVP matrix
   auto V = cam.get_view();
