@@ -73,7 +73,31 @@ bool update(float delta_time) {
 	// Update the scale - based on the sin wave
 	s = 1.0f + sinf(total_time);
 	//TODO
-
+	// Multiply by 5
+	s *= 5.0f;
+	// Increment theta - half a rotation per second
+	theta += pi<float>() * delta_time;
+	// Key events
+	// Check if key is pressed
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_UP)) {
+		pos += vec3(0.0f, 0.0f, -5.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_DOWN)) {
+		pos += vec3(0.0f, 0.0f, 5.0f) * delta_time;	
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_LEFT)) {
+		pos += vec3(-5.0f, 0.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_RIGHT)) {
+		pos += vec3(5.0f, 0.0f, 0.0f) * delta_time;
+	}
+	// Additional for z-axis control
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_A)) {
+		pos += vec3(0.0f,-5.0f, 0.0f) * delta_time;
+	}
+	if (glfwGetKey(renderer::get_window(), GLFW_KEY_D)) {
+		pos += vec3(0.0f, 5.0f, 0.0f) * delta_time;
+	}
 
 
 	// Update the camera
@@ -86,6 +110,21 @@ bool render() {
 	renderer::bind(eff);
 	// Create MVP matrix
 	mat4 M(1.0f);
+	// Create transformation matrices
+	mat4 T, R, S;
+	// Variables for transformations
+	vec3 x_rot(1.0f, 0.0f, 0.0f);
+	vec3 y_rot(0.0f, 1.0f, 0.0f);
+	vec3 z_rot(0.0f, 0.0f, 1.0f);
+	vec3 s_vec(s, s, s);
+	quat qz(rotate(quat(), theta, z_rot));
+
+	S = scale(mat4(1.0f), s_vec);
+	R = mat4_cast(qz);
+	T = translate(mat4(1.0f), pos);
+	// Concantenate transformation matrices
+	M = T * (R * S);
+
 	auto V = cam.get_view();
 	auto P = cam.get_projection();
 	auto MVP = P * V * M;
